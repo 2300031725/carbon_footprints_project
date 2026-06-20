@@ -199,8 +199,9 @@ const CarbonCalculator: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Car Travel (km per week)</label>
+                  <label htmlFor="car_km" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Car Travel (km per week)</label>
                   <input 
+                    id="car_km"
                     type="number"
                     value={formData.transportation.car_km}
                     onChange={(e) => handleTransChange('car_km', Number(e.target.value))}
@@ -211,12 +212,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.transportation.car_km}
                     onChange={(e) => handleTransChange('car_km', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Car Travel Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Bicycle Travel (km per week)</label>
+                  <label htmlFor="bike_km" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Bicycle Travel (km per week)</label>
                   <input 
+                    id="bike_km"
                     type="number"
                     value={formData.transportation.bike_km}
                     onChange={(e) => handleTransChange('bike_km', Number(e.target.value))}
@@ -227,12 +230,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.transportation.bike_km}
                     onChange={(e) => handleTransChange('bike_km', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Bicycle Travel Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Public Transit (km per week)</label>
+                  <label htmlFor="public_transit_km" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Public Transit (km per week)</label>
                   <input 
+                    id="public_transit_km"
                     type="number"
                     value={formData.transportation.public_transit_km}
                     onChange={(e) => handleTransChange('public_transit_km', Number(e.target.value))}
@@ -243,12 +248,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.transportation.public_transit_km}
                     onChange={(e) => handleTransChange('public_transit_km', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Public Transit Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Air Flights taken per year</label>
+                  <label htmlFor="flights_per_year" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Air Flights taken per year</label>
                   <input 
+                    id="flights_per_year"
                     type="number"
                     value={formData.transportation.flights_per_year}
                     onChange={(e) => handleTransChange('flights_per_year', Number(e.target.value))}
@@ -259,6 +266,7 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.transportation.flights_per_year}
                     onChange={(e) => handleTransChange('flights_per_year', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Air Flights Range"
                   />
                 </div>
               </div>
@@ -281,8 +289,9 @@ const CarbonCalculator: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Electricity Usage (kWh / month)</label>
+                  <label htmlFor="electricity_kwh" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Electricity Usage (kWh / month)</label>
                   <input 
+                    id="electricity_kwh"
                     type="number"
                     value={formData.energy.electricity_kwh}
                     onChange={(e) => handleEnergyChange('electricity_kwh', Number(e.target.value))}
@@ -293,12 +302,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.energy.electricity_kwh}
                     onChange={(e) => handleEnergyChange('electricity_kwh', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Electricity Usage Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">LPG / Gas consumption (kg / month)</label>
+                  <label htmlFor="gas_lpg" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">LPG / Gas consumption (kg / month)</label>
                   <input 
+                    id="gas_lpg"
                     type="number"
                     value={formData.energy.gas_lpg}
                     onChange={(e) => handleEnergyChange('gas_lpg', Number(e.target.value))}
@@ -309,12 +320,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.energy.gas_lpg}
                     onChange={(e) => handleEnergyChange('gas_lpg', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="LPG / Gas consumption Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2 md:col-span-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Renewable Energy Share ({formData.energy.renewable_pct}%)</label>
+                  <label htmlFor="renewable_pct" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Renewable Energy Share ({formData.energy.renewable_pct}%)</label>
                   <input 
+                    id="renewable_pct"
                     type="range" min="0" max="100"
                     value={formData.energy.renewable_pct}
                     onChange={(e) => handleEnergyChange('renewable_pct', Number(e.target.value))}
@@ -342,8 +355,9 @@ const CarbonCalculator: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Diet Style</label>
+                  <label htmlFor="diet_type" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Diet Style</label>
                   <select 
+                    id="diet_type"
                     value={formData.food.diet_type}
                     onChange={(e) => handleFoodChange('diet_type', e.target.value)}
                     className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold outline-none focus:border-eco-500 transition-colors"
@@ -355,8 +369,9 @@ const CarbonCalculator: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Weekly Meat Servings</label>
+                  <label htmlFor="meat_servings" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Weekly Meat Servings</label>
                   <input 
+                    id="meat_servings"
                     type="number"
                     disabled={formData.food.diet_type !== 'Non-Vegetarian'}
                     value={formData.food.diet_type !== 'Non-Vegetarian' ? 0 : formData.food.meat_servings}
@@ -369,6 +384,7 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.food.diet_type !== 'Non-Vegetarian' ? 0 : formData.food.meat_servings}
                     onChange={(e) => handleFoodChange('meat_servings', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1 disabled:opacity-50"
+                    aria-label="Weekly Meat Servings Range"
                   />
                 </div>
 
@@ -411,8 +427,9 @@ const CarbonCalculator: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Online Deliveries (per month)</label>
+                  <label htmlFor="online_purchases" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Online Deliveries (per month)</label>
                   <input 
+                    id="online_purchases"
                     type="number"
                     value={formData.lifestyle.online_purchases}
                     onChange={(e) => handleLifeChange('online_purchases', Number(e.target.value))}
@@ -423,12 +440,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.lifestyle.online_purchases}
                     onChange={(e) => handleLifeChange('online_purchases', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Online Deliveries Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Clothing Purchases (items per month)</label>
+                  <label htmlFor="clothing_purchases" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Clothing Purchases (items per month)</label>
                   <input 
+                    id="clothing_purchases"
                     type="number"
                     value={formData.lifestyle.clothing_purchases}
                     onChange={(e) => handleLifeChange('clothing_purchases', Number(e.target.value))}
@@ -439,12 +458,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.lifestyle.clothing_purchases}
                     onChange={(e) => handleLifeChange('clothing_purchases', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Clothing Purchases Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Electronics purchased (per year)</label>
+                  <label htmlFor="electronics_purchases" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Electronics purchased (per year)</label>
                   <input 
+                    id="electronics_purchases"
                     type="number"
                     value={formData.lifestyle.electronics_purchases}
                     onChange={(e) => handleLifeChange('electronics_purchases', Number(e.target.value))}
@@ -455,12 +476,14 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.lifestyle.electronics_purchases}
                     onChange={(e) => handleLifeChange('electronics_purchases', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Electronics purchased Range"
                   />
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Household Waste (bags per week)</label>
+                  <label htmlFor="waste_generation" className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Household Waste (bags per week)</label>
                   <input 
+                    id="waste_generation"
                     type="number"
                     value={formData.lifestyle.waste_generation}
                     onChange={(e) => handleLifeChange('waste_generation', Number(e.target.value))}
@@ -471,6 +494,7 @@ const CarbonCalculator: React.FC = () => {
                     value={formData.lifestyle.waste_generation}
                     onChange={(e) => handleLifeChange('waste_generation', Number(e.target.value))}
                     className="w-full accent-eco-500 mt-1"
+                    aria-label="Household Waste Range"
                   />
                 </div>
               </div>
@@ -526,11 +550,12 @@ const CarbonCalculator: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between text-xs font-bold text-slate-650 dark:text-slate-350">
-                      <span>Weekly Driving:</span>
+                    <div className="flex justify-between text-xs font-bold text-slate-655 dark:text-slate-350">
+                      <label htmlFor="ml_car_km">Weekly Driving:</label>
                       <span className="text-eco-600">{mlInputs.car_km} km</span>
                     </div>
                     <input 
+                      id="ml_car_km"
                       type="range" min="0" max="800"
                       value={mlInputs.car_km}
                       onChange={(e) => setMlInputs(p => ({ ...p, car_km: Number(e.target.value) }))}
@@ -539,11 +564,12 @@ const CarbonCalculator: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between text-xs font-bold text-slate-650 dark:text-slate-350">
-                      <span>Electricity Consumption:</span>
+                    <div className="flex justify-between text-xs font-bold text-slate-655 dark:text-slate-350">
+                      <label htmlFor="ml_electricity">Electricity Consumption:</label>
                       <span className="text-eco-600">{mlInputs.electricity} kWh</span>
                     </div>
                     <input 
+                      id="ml_electricity"
                       type="range" min="50" max="800"
                       value={mlInputs.electricity}
                       onChange={(e) => setMlInputs(p => ({ ...p, electricity: Number(e.target.value) }))}
@@ -552,11 +578,12 @@ const CarbonCalculator: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between text-xs font-bold text-slate-650 dark:text-slate-350">
-                      <span>Meat Servings/week:</span>
+                    <div className="flex justify-between text-xs font-bold text-slate-655 dark:text-slate-350">
+                      <label htmlFor="ml_meat_servings">Meat Servings/week:</label>
                       <span className="text-eco-600">{mlInputs.meat_servings} times</span>
                     </div>
                     <input 
+                      id="ml_meat_servings"
                       type="range" min="0" max="21"
                       value={mlInputs.meat_servings}
                       onChange={(e) => setMlInputs(p => ({ ...p, meat_servings: Number(e.target.value) }))}
@@ -565,11 +592,12 @@ const CarbonCalculator: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between text-xs font-bold text-slate-650 dark:text-slate-350">
-                      <span>Online Shopping/month:</span>
+                    <div className="flex justify-between text-xs font-bold text-slate-655 dark:text-slate-350">
+                      <label htmlFor="ml_online_purchases">Online Shopping/month:</label>
                       <span className="text-eco-600">{mlInputs.online_purchases} orders</span>
                     </div>
                     <input 
+                      id="ml_online_purchases"
                       type="range" min="0" max="30"
                       value={mlInputs.online_purchases}
                       onChange={(e) => setMlInputs(p => ({ ...p, online_purchases: Number(e.target.value) }))}

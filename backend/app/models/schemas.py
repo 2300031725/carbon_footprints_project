@@ -1,14 +1,14 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 # Profile Schemas
 class ProfileUpdate(BaseModel):
-    age: Optional[int] = None
+    age: Optional[int] = Field(None, ge=0, le=120)
     country: Optional[str] = None
     city: Optional[str] = None
     occupation: Optional[str] = None
-    household_size: Optional[int] = None
+    household_size: Optional[int] = Field(None, ge=1, le=50)
     transportation_preference: Optional[str] = None
     sustainability_interests: Optional[List[str]] = None
 
@@ -22,25 +22,25 @@ class ProfileResponse(BaseModel):
 
 # User Schemas
 class UserRegister(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6)
     role: Optional[str] = "user" # Can be admin if explicitly requested
 
 class UserLogin(BaseModel):
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=1)
 
 class ForgotPassword(BaseModel):
     email: EmailStr
 
 class ResetPassword(BaseModel):
     token: str
-    new_password: str
+    new_password: str = Field(..., min_length=6)
 
 class ChangePassword(BaseModel):
-    old_password: str
-    new_password: str
+    old_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=6)
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -49,26 +49,26 @@ class TokenResponse(BaseModel):
 
 # Carbon Footprint Calculator Schemas
 class TransportationInput(BaseModel):
-    car_km: float = Field(..., description="Car usage per week (km)")
-    bike_km: float = Field(..., description="Bike usage per week (km)")
-    public_transit_km: float = Field(..., description="Public transport usage per week (km)")
-    flights_per_year: float = Field(..., description="Flight travel per year (number of short/long flights)")
+    car_km: float = Field(..., ge=0, le=100000, description="Car usage per week (km)")
+    bike_km: float = Field(..., ge=0, le=10000, description="Bike usage per week (km)")
+    public_transit_km: float = Field(..., ge=0, le=100000, description="Public transport usage per week (km)")
+    flights_per_year: float = Field(..., ge=0, le=500, description="Flight travel per year (number of short/long flights)")
 
 class EnergyInput(BaseModel):
-    electricity_kwh: float = Field(..., description="Electricity usage (kWh/month)")
-    gas_lpg: float = Field(..., description="LPG/Gas consumption (kg or units/month)")
-    renewable_pct: float = Field(..., description="Renewable energy usage %")
+    electricity_kwh: float = Field(..., ge=0, le=1000000, description="Electricity usage (kWh/month)")
+    gas_lpg: float = Field(..., ge=0, le=100000, description="LPG/Gas consumption (kg or units/month)")
+    renewable_pct: float = Field(..., ge=0, le=100, description="Renewable energy usage %")
 
 class FoodInput(BaseModel):
     diet_type: str = Field(..., description="Vegetarian, Vegan, Non-Vegetarian")
-    meat_servings: float = Field(..., description="Weekly meat servings")
+    meat_servings: float = Field(..., ge=0, le=1000, description="Weekly meat servings")
     food_waste_level: str = Field(..., description="Low, Medium, High")
 
 class LifestyleInput(BaseModel):
-    online_purchases: float = Field(..., description="Online purchases/month")
-    clothing_purchases: float = Field(..., description="Clothing purchases/month")
-    electronics_purchases: float = Field(..., description="Electronics purchases/year")
-    waste_generation: float = Field(..., description="Waste bags generated per week")
+    online_purchases: float = Field(..., ge=0, le=10000, description="Online purchases/month")
+    clothing_purchases: float = Field(..., ge=0, le=10000, description="Clothing purchases/month")
+    electronics_purchases: float = Field(..., ge=0, le=1000, description="Electronics purchases/year")
+    waste_generation: float = Field(..., ge=0, le=1000, description="Waste bags generated per week")
 
 class CarbonRecordInput(BaseModel):
     transportation: TransportationInput
@@ -90,9 +90,18 @@ class CarbonRecordResponse(BaseModel):
 # Goals Schemas
 class GoalCreate(BaseModel):
     category: str # "transportation", "energy", "food", "lifestyle"
-    title: str
-    target_value: float
+    title: str = Field(..., min_length=1)
+    target_value: float = Field(..., ge=0)
     deadline: datetime
+
+    @field_validator('deadline')
+    @classmethod
+    def validate_deadline(cls, v: datetime) -> datetime:
+        # Check if deadline is in the future
+        now = datetime.now(v.tzinfo) if v.tzinfo else datetime.now()
+        if v < now:
+            raise ValueError("Goal deadline must be in the future.")
+        return v
 
 class GoalUpdate(BaseModel):
     progress: float
