@@ -120,51 +120,6 @@ async def list_challenges(
     db_manager: DatabaseManager = Depends(get_db)
 ):
     challenges_col = db_manager.get_collection("challenges")
-    
-    # Seed default challenges if none exist
-    count = await challenges_col.count_documents({})
-    if count == 0:
-        default_challenges = [
-            {
-                "_id": str(ObjectId()),
-                "title": "No Plastic Week",
-                "description": "Avoid all single-use plastics like straws, water bottles, and bags for 7 days.",
-                "points": 100,
-                "duration_days": 7,
-                "category": "lifestyle",
-                "active": True
-            },
-            {
-                "_id": str(ObjectId()),
-                "title": "Walk Instead of Drive Challenge",
-                "description": "Walk, cycle, or scooter for all trips under 3 kilometers this week.",
-                "points": 150,
-                "duration_days": 7,
-                "category": "transportation",
-                "active": True
-            },
-            {
-                "_id": str(ObjectId()),
-                "title": "Save Energy Challenge",
-                "description": "Unplug standby vampire devices and lower your air-con heating levels for 7 days.",
-                "points": 120,
-                "duration_days": 7,
-                "category": "energy",
-                "active": True
-            },
-            {
-                "_id": str(ObjectId()),
-                "title": "Meatless Week",
-                "description": "Eat a 100% vegetarian or vegan diet for one full week.",
-                "points": 200,
-                "duration_days": 7,
-                "category": "food",
-                "active": True
-            }
-        ]
-        for dc in default_challenges:
-            await challenges_col.insert_one(dc)
-            
     cursor = challenges_col.find({"active": True})
     challenges = await cursor.to_list(length=100)
     return [serialize_challenge(c) for c in challenges]

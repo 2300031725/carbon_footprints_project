@@ -69,6 +69,53 @@ async def seed_default_users():
         await users_col.insert_one(jane_user)
         logger.info("Seeded default user: jane@gmail.com / jane123")
 
+async def seed_default_challenges():
+    challenges_col = db_manager.get_collection("challenges")
+    count = await challenges_col.count_documents({})
+    if count == 0:
+        from bson import ObjectId
+        default_challenges = [
+            {
+                "_id": str(ObjectId()),
+                "title": "No Plastic Week",
+                "description": "Avoid all single-use plastics like straws, water bottles, and bags for 7 days.",
+                "points": 100,
+                "duration_days": 7,
+                "category": "lifestyle",
+                "active": True
+            },
+            {
+                "_id": str(ObjectId()),
+                "title": "Walk Instead of Drive Challenge",
+                "description": "Walk, cycle, or scooter for all trips under 3 kilometers this week.",
+                "points": 150,
+                "duration_days": 7,
+                "category": "transportation",
+                "active": True
+            },
+            {
+                "_id": str(ObjectId()),
+                "title": "Save Energy Challenge",
+                "description": "Unplug standby vampire devices and lower your air-con heating levels for 7 days.",
+                "points": 120,
+                "duration_days": 7,
+                "category": "energy",
+                "active": True
+            },
+            {
+                "_id": str(ObjectId()),
+                "title": "Meatless Week",
+                "description": "Eat a 100% vegetarian or vegan diet for one full week.",
+                "points": 200,
+                "duration_days": 7,
+                "category": "food",
+                "active": True
+            }
+        ]
+        for dc in default_challenges:
+            await challenges_col.insert_one(dc)
+        logger.info("Seeded default sustainability challenges.")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Connect to Database
@@ -80,6 +127,12 @@ async def lifespan(app: FastAPI):
         await seed_default_users()
     except Exception as e:
         logger.error(f"Failed to seed default users: {e}")
+
+    # Seed default challenges
+    try:
+        await seed_default_challenges()
+    except Exception as e:
+        logger.error(f"Failed to seed default challenges: {e}")
         
     # Train/Verify ML prediction model
     try:

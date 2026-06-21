@@ -1,5 +1,4 @@
-import urllib.request
-import json
+import httpx
 import logging
 from typing import Dict, Any, Optional
 from app.core.config import settings
@@ -24,7 +23,7 @@ SUSTAINABILITY_KNOWLEDGE = {
     "appliances": "Look for Energy Star certified appliances which use 10-50% less energy than standard models, cutting both your bills and footprint."
 }
 
-def ask_openai(prompt: str, api_key: str) -> Optional[str]:
+async def ask_openai(prompt: str, api_key: str) -> Optional[str]:
     try:
         url = "https://api.openai.com/v1/chat/completions"
         headers = {
@@ -39,15 +38,19 @@ def ask_openai(prompt: str, api_key: str) -> Optional[str]:
             ],
             "max_tokens": 150
         }
-        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
-        with urllib.request.urlopen(req, timeout=5) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            return res_data["choices"][0]["message"]["content"].strip()
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.post(url, json=data, headers=headers)
+            if response.status_code == 200:
+                res_data = response.json()
+                return res_data["choices"][0]["message"]["content"].strip()
+            else:
+                logger.error(f"OpenAI API returned status {response.status_code}: {response.text}")
+                return None
     except Exception as e:
         logger.error(f"OpenAI API call failed: {e}")
         return None
 
-def ask_gemini(prompt: str, api_key: str) -> Optional[str]:
+async def ask_gemini(prompt: str, api_key: str) -> Optional[str]:
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
         headers = {"Content-Type": "application/json"}
@@ -58,10 +61,14 @@ def ask_gemini(prompt: str, api_key: str) -> Optional[str]:
                 }]
             }]
         }
-        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
-        with urllib.request.urlopen(req, timeout=5) as response:
-            res_data = json.loads(response.read().decode("utf-8"))
-            return res_data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.post(url, json=data, headers=headers)
+            if response.status_code == 200:
+                res_data = response.json()
+                return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            else:
+                logger.error(f"Gemini API returned status {response.status_code}: {response.text}")
+                return None
     except Exception as e:
         logger.error(f"Gemini API call failed: {e}")
         return None
@@ -74,12 +81,12 @@ async def get_chatbot_reply(user_message: str, user_profile: Dict[str, Any], lat
     
     # Check if external API key exists
     if settings.OPENAI_API_KEY:
-        openai_reply = ask_openai(user_message, settings.OPENAI_API_KEY)
+        openai_reply = await ask_openai(user_message, settings.OPENAI_API_KEY)
         if openai_reply:
             return openai_reply
             
     if settings.GEMINI_API_KEY:
-        gemini_reply = ask_gemini(user_message, settings.GEMINI_API_KEY)
+        gemini_reply = await ask_gemini(user_message, settings.GEMINI_API_KEY)
         if gemini_reply:
             return gemini_reply
 

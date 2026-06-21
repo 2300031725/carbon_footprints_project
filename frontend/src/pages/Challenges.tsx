@@ -1,83 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../services/api';
+import React, { useState } from 'react';
+import { 
+  useChallengesQuery, 
+  useParticipationsQuery, 
+  useJoinChallengeMutation, 
+  useCompleteChallengeMutation 
+} from '../hooks/useQueries';
 import { useAuth } from '../context/AuthContext';
+import { CATEGORY_BADGES } from '../constants';
 import { 
   CheckCircle2, Flame
 } from 'lucide-react';
-
-interface Challenge {
-  id: string;
-  title: string;
-  description: string;
-  points: number;
-  duration_days: number;
-  category: string;
-}
-
-interface Participation {
-  id: string;
-  challenge_id: string;
-  status: string;
-}
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Challenges: React.FC = () => {
   const { refreshUser } = useAuth();
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
-  const [participations, setParticipations] = useState<Participation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  
+  // React Query Queries
+  const { data: challenges = [], isLoading: challengesLoading } = useChallengesQuery();
+  const { data: participations = [], isLoading: participationsLoading } = useParticipationsQuery();
+  
+  // Mutations
+  const joinChallengeMutation = useJoinChallengeMutation();
+  const completeChallengeMutation = useCompleteChallengeMutation();
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [chalRes, partRes] = await Promise.all([
-        api.goals.listChallenges(),
-        api.goals.getParticipations()
-      ]);
-      setChallenges(chalRes);
-      setParticipations(partRes);
-    } catch (err) {
-      console.error('Failed to load challenges:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   const handleJoinChallenge = async (id: string) => {
     try {
-      setActionLoading(id);
-      await api.goals.joinChallenge(id);
-      // Reload participations
-      const updatedParts = await api.goals.getParticipations();
-      setParticipations(updatedParts);
+      setActionLoadingId(id);
+      await joinChallengeMutation.mutateAsync(id);
     } catch (err) {
       console.error(err);
       alert('Failed to join challenge.');
     } finally {
-      setActionLoading(null);
+      setActionLoadingId(null);
     }
   };
 
   const handleCompleteChallenge = async (id: string) => {
     try {
-      setActionLoading(id);
-      const res = await api.goals.completeChallenge(id);
+      setActionLoadingId(id);
+      const res = await completeChallengeMutation.mutateAsync(id);
       alert(res.message);
-      
-      // Reload everything to sync points/badges
-      await Promise.all([
-        loadData(),
-        refreshUser()
-      ]);
+      await refreshUser(); // Sync awarded points in context
     } catch (err) {
       console.error(err);
       alert('Failed to complete challenge.');
     } finally {
-      setActionLoading(null);
+      setActionLoadingId(null);
     }
   };
 
@@ -87,15 +57,10 @@ const Challenges: React.FC = () => {
     return found.status as 'joined' | 'completed';
   };
 
-  const categoryBadges: Record<string, string> = {
-    transportation: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/20 dark:text-cyan-400',
-    energy: 'bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400',
-    food: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400',
-    lifestyle: 'bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400'
-  };
+  const loading = challengesLoading || participationsLoading;
 
   return (
-    <div className="flex flex-col gap-6 text-left max-w-5xl mx-auto">
+    <div className="flex flex-col gap-6 text-left max-w-5xl mx-auto font-semibold">
       <div className="flex justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Eco Challenges</h1>
@@ -110,13 +75,14 @@ const Challenges: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="text-sm text-slate-450 py-12">Loading Eco Challenges...</div>
+        <LoadingSpinner message="Loading Eco Challenges..." className="min-h-[300px]" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {challenges.map((challenge) => {
             const status = getChallengeStatus(challenge.id);
             const joined = status === 'joined';
             const completed = status === 'completed';
+            const actionLoading = actionLoadingId === challenge.id;
             
             return (
               <div 
@@ -132,7 +98,7 @@ const Challenges: React.FC = () => {
                 <div className="flex flex-col gap-3">
                   <div className="flex justify-between items-center">
                     <span className={`text-2xs font-extrabold px-2.5 py-1 rounded-md uppercase ${
-                      categoryBadges[challenge.category] || 'bg-slate-100 text-slate-650'
+                      CATEGORY_BADGES[challenge.category] || 'bg-slate-100 text-slate-655'
                     }`}>
                       {challenge.category}
                     </span>
@@ -141,8 +107,8 @@ const Challenges: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="font-extrabold text-slate-950 dark:text-white text-lg mt-1">{challenge.title}</h3>
-                  <p className="text-xs text-slate-550 dark:text-slate-400 leading-relaxed mt-1">
+                  <h3 className="font-extrabold text-slate-955 dark:text-white text-lg mt-1">{challenge.title}</h3>
+                  <p className="text-xs text-slate-550 dark:text-slate-400 leading-relaxed mt-1 font-medium">
                     {challenge.description}
                   </p>
                 </div>
@@ -158,18 +124,18 @@ const Challenges: React.FC = () => {
                   ) : joined ? (
                     <button
                       onClick={() => handleCompleteChallenge(challenge.id)}
-                      disabled={actionLoading === challenge.id}
-                      className="px-5 py-2.5 bg-eco-600 hover:bg-eco-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-eco-600/10 transition-colors disabled:opacity-50"
+                      disabled={actionLoading}
+                      className="px-5 py-2.5 bg-eco-600 hover:bg-eco-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-eco-600/10 transition-colors disabled:opacity-50 cursor-pointer"
                     >
-                      {actionLoading === challenge.id ? 'Completing...' : 'Mark Completed'}
+                      {actionLoading ? 'Completing...' : 'Mark Completed'}
                     </button>
                   ) : (
                     <button
                       onClick={() => handleJoinChallenge(challenge.id)}
-                      disabled={actionLoading === challenge.id}
-                      className="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 dark:bg-slate-800 dark:hover:bg-slate-750 text-white text-xs font-bold rounded-xl transition-colors disabled:opacity-50"
+                      disabled={actionLoading}
+                      className="px-5 py-2.5 bg-slate-900 hover:bg-slate-850 dark:bg-slate-800 dark:hover:bg-slate-750 text-white text-xs font-bold rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
                     >
-                      {actionLoading === challenge.id ? 'Joining...' : 'Accept Challenge'}
+                      {actionLoading ? 'Joining...' : 'Accept Challenge'}
                     </button>
                   )}
                 </div>
