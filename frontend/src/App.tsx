@@ -1,3 +1,4 @@
+// EcoTrack SPA App - Refactored Version 1.0.1
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute, PublicRoute, AdminRoute } from './components/RouteGuards';
